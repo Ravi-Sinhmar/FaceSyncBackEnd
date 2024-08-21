@@ -16,7 +16,7 @@ const { getCookies } = require("./Controllers/getCookies");
 // Middlewares
 app.use(
   cors({
-    origin: "http://localhost:3000", // Allow requests from this origin
+    origin: "https://face-sync.vercel.app", // Allow requests from this origin
     methods: "GET, POST, PUT, DELETE", // Allowed methods
     credentials: true, // Allow credentials (cookies, authorization headers)
   })
@@ -36,7 +36,6 @@ app.post("/saveMeet", async (req, res) => {
         res.cookie("token", token, {
           httpOnly: true,
           sameSite: "none",
-          maxAge: 60 * 60,
           secure:true,
         });
      console.log("SuccessFully Saved Data in Data Base");
