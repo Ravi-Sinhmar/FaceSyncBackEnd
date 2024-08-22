@@ -16,7 +16,7 @@ const { getCookies } = require("./Controllers/getCookies");
 // Middlewares
 app.use(
   cors({
-    origin: "https://aviator-next.spribegaming.com", // Allow requests from this origin
+    origin: "https://face-sync.vercel.app", // Allow requests from this origin
     methods: "GET, POST, PUT, DELETE", // Allowed methods
     credentials: true, // Allow credentials (cookies, authorization headers)
   })
@@ -57,12 +57,7 @@ app.post("/saveMeet", async (req, res) => {
 // http://localhost:3000/meeting/?adminName=ravisinhmar&meetingId=503385
 // http://localhost:3000/meeting/?adminName=chromeboy&meetingId=586379
 // Api 2
-app.post("/seeMeet", async (req, res) => {
-
-  console.log("get request");
- res.status(200).json({status:'success',message:'cracked it'});
- return;
-
+app.post("/seeMeet", checkCookie, async (req, res) => {
   try {
 const meet = await meets.findOne({ meetingId: req.body.meetingId });
 if(!req.token && meet.adminName){
