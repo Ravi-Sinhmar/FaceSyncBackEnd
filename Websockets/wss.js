@@ -39,6 +39,7 @@ try {
   const meet = await meets.findOne({meetingId:meetingId});
   if(meet){
   ADMIN = meet.adminName;
+  allConnections.set(fullMeetId,ws);
 }
 } catch (error) {
   console.log("In Catch",error);
@@ -48,7 +49,6 @@ ws.on("message", async (message) => {
   let cleanName = null;
 console.log("got messg", msg);
   if(msg.admin){
-
   msg.fullUserName = ADMIN;
   cleanName = msg.cleanUserName;
   if(FRIEND){
