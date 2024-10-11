@@ -29,6 +29,8 @@ const parts = url.split('fullMeetId=')[1];
 fullMeetId = parts.split('&deviceName=')[0];
 cleanUserName = parts.split('&deviceName=')[1];
 
+console.log("cleanusername" ,cleanUserName);
+
 cleanUserName = formatString(cleanUserName);
 let meetingId = extractMeetingId(fullMeetId);
 
