@@ -46,6 +46,7 @@ try {
 ws.on("message", async (message) => {
   let msg = JSON.parse(message);
   let cleanName = null;
+console.log("got messg", msg);
   if(msg.admin){
 
   msg.fullUserName = ADMIN;
@@ -60,11 +61,10 @@ ws.on("message", async (message) => {
   }
   let fcleanName = msg.cleanFriendName;
   fcleanName = `${fcleanName}${meetingId}`;
+  console.log(fcleanName);
+  console.log(fullMeetId);
 if(`${cleanName}${meetingId}`===  fullMeetId){
   console.log("Id matchad");
-}else{
-  isValid = false;
-  ws.close();
 }
  if(allConnections.has(fullMeetId) && allConnections.has(fcleanName)){
  const fws = allConnections.get(fcleanName)
@@ -76,7 +76,7 @@ if(`${cleanName}${meetingId}`===  fullMeetId){
 
   ws.on("error", (err) => {
     console.error(`Error from ws.on error ${err}`);
-    ws.close();
+
   });
 
 
