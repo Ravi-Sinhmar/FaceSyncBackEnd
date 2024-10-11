@@ -23,7 +23,7 @@ wss.on("connection", async(ws, req) => {
  let cleanFriendName = null;
  let fullFiendName = null;
  let fullMeetId = null;
- let isValid = false;
+
  const url = req.url;
 const parts = url.split('fullMeetId=')[1];
 fullMeetId = parts.split('&deviceName=')[0];
@@ -35,18 +35,12 @@ let meetingId = extractMeetingId(fullMeetId);
 try {
   console.log(meetingId);
   const meet = await meets.findOne({meetingId:meetingId});
-  if(!meet){
-    ws.close();
-}else{
-  isValid = true;
+  if(meet){
   ADMIN = meet.adminName;
 }
 } catch (error) {
   console.log("In Catch",error);
 }
-
-
-
 ws.on("message", async (message) => {
   let msg = JSON.parse(message);
   let cleanName = null;
@@ -70,7 +64,7 @@ if(`${cleanName}${meetingId}`===  fullMeetId){
   isValid = false;
   ws.close();
 }
- if(allConnections.has(fullMeetId) && allConnections.has(fcleanName) && isValid){
+ if(allConnections.has(fullMeetId) && allConnections.has(fcleanName)){
  const fws = allConnections.get(fcleanName)
   if(fws.readyState === WebSocket.OPEN){
     fws.send(JSON.stringify(msg));
