@@ -26,18 +26,19 @@ name = parts.split('&name=')[1];
 name = formatString(name);
 let meetingId = extractMeetingId(userName);
 try {
+  console.log(meetingId);
   const meet = await meets.findOne({meetingId:meetingId});
   const cleanName = meet.adminName.toLowerCase().replace(/\s+/g, "");
-  if(name === cleanName){
+  console.log("Find in database " , meet);
+  if(name === cleanName ){
+    console.log("Find in database");
   name = meet.adminName;
 }
 } catch (error) {
   console.log("In Catch",error);
 }
 console.log(name);
-  allConnections.set(userName,ws);
-
- 
+allConnections.set(userName,ws);
 ws.on("message", async (message) => {
   const msg = JSON.parse(message);
   console.log("got the message",msg);
@@ -55,8 +56,6 @@ if(`${cleanName}${meetingId}`===  userName){
     fws.send(JSON.stringify(msg));
   }
  }
-
-
 });
 
 

@@ -64,7 +64,6 @@ if(!req.token && meet.adminName){
   console.log("NO tokens , means another user");
  return res.status(200).json({status:'success',token:false});
 }
-
 if(req.token && meet.adminName){
   let adminName1 = req.adminName.toLowerCase().replace(/\s+/g, "");
   let adminName2 = req.body.adminName.toLowerCase().replace(/\s+/g, "");
