@@ -34,8 +34,7 @@ let meetingId = extractMeetingId(fullMeetId);
 try {
   console.log(meetingId);
   const meet = await meets.findOne({meetingId:meetingId});
-  const cleanName = meet.adminName.toLowerCase().replace(/\s+/g, "");
-  if(deviceName !== cleanName){
+  if(!meet){
     ws.close();
 }else{
   isValid = true;
@@ -51,6 +50,7 @@ ws.on("message", async (message) => {
   let msg = JSON.parse(message);
   let cleanName = null;
   if(msg.admin){
+
   msg.fullUserName = ADMIN;
   cleanName = msg.cleanUserName;
   if(FRIEND){
