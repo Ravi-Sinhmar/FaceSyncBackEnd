@@ -58,6 +58,8 @@ console.log("got messg", msg);
   }else{
     cleanName = msg.cleanFriendName;
    msg.fullFiendName = ADMIN;
+   FRIEND = msg.fullUserName;
+   
   }
   let fcleanName = msg.cleanFriendName;
   fcleanName = `${fcleanName}${meetingId}`;
