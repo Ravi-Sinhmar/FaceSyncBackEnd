@@ -15,60 +15,77 @@ const {formatString,extractMeetingId} = require('./../Controllers/Common/common'
 // const cleanName =  userName.toLowerCase().replace(/\s+/g, "");
 
 const allConnections = new Map();
-
+let ADMIN = null;
+let FRIEND = null;
 wss.on("connection", async(ws, req) => {
-  let userName = null;
-  let name = null;
+ let cleanUserName = null;
+ let fullUserName = null;
+ let cleanFriendName = null;
+ let fullFiendName = null;
+ let fullMeetId = null;
+ let isValid = false;
  const url = req.url;
-const parts = url.split('userName=')[1];
- userName = parts.split('&name=')[0];
-name = parts.split('&name=')[1];
-name = formatString(name);
-let meetingId = extractMeetingId(userName);
+const parts = url.split('fullMeetId=')[1];
+fullMeetId = parts.split('&deviceName=')[0];
+cleanUserName = parts.split('&deviceName=')[1];
+cleanUserName = formatString(cleanUserName);
+let meetingId = extractMeetingId(fullMeetId);
+
 try {
   console.log(meetingId);
   const meet = await meets.findOne({meetingId:meetingId});
   const cleanName = meet.adminName.toLowerCase().replace(/\s+/g, "");
-  console.log("Find in database " , meet);
-  if(name === cleanName ){
-    console.log("Find in database");
-  name = meet.adminName;
+  if(deviceName !== cleanName){
+    ws.close();
+}else{
+  isValid = true;
+  ADMIN = meet.adminName;
 }
 } catch (error) {
   console.log("In Catch",error);
 }
-console.log(name);
-allConnections.set(userName,ws);
-ws.on("message", async (message) => {
-  const msg = JSON.parse(message);
-  console.log("got the message",msg);
-  const cleanName =  msg.userName.toLowerCase().replace(/\s+/g, "");
-  let fcleanName =  msg.friendName.toLowerCase().replace(/\s+/g, "");
-  fcleanName = `${fcleanName}${meetingId}`;
-if(`${cleanName}${meetingId}`===  userName){
-  console.log("Id matchad");
-}
 
- if(allConnections.has(userName) && allConnections.has(fcleanName)){
+
+
+ws.on("message", async (message) => {
+  let msg = JSON.parse(message);
+  let cleanName = null;
+  if(msg.admin){
+  msg.fullUserName = ADMIN;
+  cleanName = msg.cleanUserName;
+  if(FRIEND){
+    msg.cleanFriendName = FRIEND.toLowerCase().replace(/\s+/g, "");
+    msg.fullFiendName = FRIEND;
+  }
+  }else{
+    cleanName = msg.cleanFriendName;
+   msg.fullFiendName = ADMIN;
+  }
+  let fcleanName = msg.cleanFriendName;
+  fcleanName = `${fcleanName}${meetingId}`;
+if(`${cleanName}${meetingId}`===  fullMeetId){
+  console.log("Id matchad");
+}else{
+  isValid = false;
+  ws.close();
+}
+ if(allConnections.has(fullMeetId) && allConnections.has(fcleanName) && isValid){
  const fws = allConnections.get(fcleanName)
   if(fws.readyState === WebSocket.OPEN){
-    console.log("message sent to fws",fcleanName);
     fws.send(JSON.stringify(msg));
   }
  }
 });
 
-
-
-
   ws.on("error", (err) => {
     console.error(`Error from ws.on error ${err}`);
+    ws.close();
   });
 
 
   ws.on("close", async () => {
     console.log("User Disconnected");
-    allConnections.delete(userName);
+    allConnections.delete(fullMeetId);
   });
 });
 
