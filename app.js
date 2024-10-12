@@ -16,7 +16,7 @@ const { getCookies } = require("./Controllers/getCookies");
 // Middlewares
 app.use(
   cors({
-    origin: "https://face-sync.vercel.app", // Allow requests from this origin
+    origin: "https://facesyncbackend.onrender.com", // Allow requests from this origin
     methods: "GET, POST, PUT, DELETE", // Allowed methods
     credentials: true, // Allow credentials (cookies, authorization headers)
   })
