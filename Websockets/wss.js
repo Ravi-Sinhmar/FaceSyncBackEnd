@@ -10,81 +10,75 @@ const meets = require("./../Models/meets");
 
 // custom controllers
 const { getCookies } = require("./../Controllers/getCookies");
-const {formatString,extractMeetingId} = require('./../Controllers/Common/common');
+const {
+  formatString,
+  extractMeetingId,
+} = require("./../Controllers/Common/common");
 
 // const cleanName =  userName.toLowerCase().replace(/\s+/g, "");
 
-const allConnections = new Map();
-let ADMIN = null;
-let FRIEND = null;
-wss.on("connection", async(ws, req) => {
- let cleanUserName = null;
- let fullUserName = null;
- let cleanFriendName = null;
- let fullFiendName = null;
- let fullMeetId = null;
+// Global Varibales
+const allConnections = new Map(); //Array to Store Websockets of both the connection
 
- const url = req.url;
-const parts = url.split('fullMeetId=')[1];
-fullMeetId = parts.split('&deviceName=')[0];
-cleanUserName = parts.split('&deviceName=')[1];
+wss.on("connection", async (ws, req) => {
+  const url = req.url;
+  const meetingId = url.split("fullMeetId=")[1];
+  const type = meetingId.split("__.")[1];
 
-console.log("cleanusername" ,cleanUserName);
-
-cleanUserName = formatString(cleanUserName);
-let meetingId = extractMeetingId(fullMeetId);
-
-try {
-  console.log(meetingId);
-  const meet = await meets.findOne({meetingId:meetingId});
-  if(meet){
-  ADMIN = meet.adminName;
-  allConnections.set(fullMeetId,ws);
-}
-} catch (error) {
-  console.log("In Catch",error);
-}
-ws.on("message", async (message) => {
-  let msg = JSON.parse(message);
-  let cleanName = null;
-console.log("got messg", msg);
-  if(msg.admin){
-  msg.fullUserName = ADMIN;
-  cleanName = msg.cleanUserName;
-  if(FRIEND){
-    msg.cleanFriendName = FRIEND.toLowerCase().replace(/\s+/g, "");
-    msg.fullFiendName = FRIEND;
+  try {
+    const meet = await meets.findOne({ meetingId: meetingId });
+    if (true) {
+      allConnections.set(type, ws);
+      console.log("Connected",type);
+    
+    } else {
+      ws.close();
+    }
+  } catch (error) {
+    console.log("In Catch", error);
+    ws.close();
   }
-  }else{
-    cleanName = msg.cleanFriendName;
-   msg.fullFiendName = ADMIN;
-   FRIEND = msg.fullUserName;
-   
-  }
-  let fcleanName = msg.cleanFriendName;
-  fcleanName = `${fcleanName}${meetingId}`;
-  console.log(fcleanName);
-  console.log(fullMeetId);
-if(`${cleanName}${meetingId}`===  fullMeetId){
-  console.log("Id matchad");
-}
- if(allConnections.has(fullMeetId) && allConnections.has(fcleanName)){
- const fws = allConnections.get(fcleanName)
-  if(fws.readyState === WebSocket.OPEN){
-    fws.send(JSON.stringify(msg));
-  }
- }
-});
-
-  ws.on("error", (err) => {
-    console.error(`Error from ws.on error ${err}`);
-
+  // If Message Comes
+  ws.on("message", async (message) => {
+    let msg = JSON.parse(message);
+    // let msg = message
+    console.log("got messg", msg);
+    let sender = null;
+    let receiver = null;
+    if (msg.admin) {
+      sender = "ad";
+      receiver = "us";
+    } else {
+      sender = "us";
+      receiver = "ad";
+    }
+    if (allConnections.has(sender) && allConnections.has(receiver)) {
+      const fws = allConnections.get(receiver);
+      if (fws.readyState === WebSocket.OPEN) {
+        fws.send(JSON.stringify(msg));
+      }
+    } else if (allConnections.has(sender)) {
+      const fws = allConnections.get(sender);
+      if (fws.readyState === WebSocket.OPEN) {
+        fws.send(JSON.stringify({ OnlyAvailable: sender }));
+      }
+    } else if (allConnections.has(receiver)) {
+      const fws = allConnections.get(receiver);
+      if (fws.readyState === WebSocket.OPEN) {
+        fws.send(JSON.stringify({ OnlyAvailable: receiver }));
+      }
+    }
   });
 
+  // If Error Comes
+  ws.on("error", (err) => {
+    console.error(`Error from ws.on error ${err}`);
+  });
 
+  // If WebSocket Closes
   ws.on("close", async () => {
     console.log("User Disconnected");
-    allConnections.delete(fullMeetId);
+    allConnections.delete(type);
   });
 });
 
