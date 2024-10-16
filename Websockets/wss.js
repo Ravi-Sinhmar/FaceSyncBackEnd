@@ -29,26 +29,9 @@ wss.on("connection", async (ws, req) => {
   try {
     const meet = await meets.findOne({ meetingId: meetingId });
     if (meet) {
-     allConnections.set(type, ws);
-// if(allConnections.has("us") && allConnections.has("ad")){
-// const adSocket = allConnections.get("ad");
-// const usSocket = allConnections.get("us");
-
-// if (adSocket.readyState === WebSocket.OPEN) {
-//   adSocket.send(JSON.stringify({status:"both"}));
-// };
-// if (usSocket.readyState === WebSocket.OPEN) {
-//   usSocket.send(JSON.stringify({status:"both"}));
-// };
-
-// }else {
-//   if (ws.readyState === WebSocket.OPEN) {
-//     ws.send(JSON.stringify({status:"you"}));
-//   }
-// }
-
-
+      allConnections.set(type, ws);
       console.log("Connected",type);
+    
     } else {
       ws.close();
     }
@@ -58,7 +41,7 @@ wss.on("connection", async (ws, req) => {
   }
   // If Message Comes
   ws.on("message", async (message) => {
-    let msg = await JSON.parse(message);
+    let msg = JSON.parse(message);
     // let msg = message
     console.log("got messg", msg);
     let sender = null;
@@ -71,9 +54,9 @@ wss.on("connection", async (ws, req) => {
       receiver = "ad";
     }
     if (allConnections.has(sender) && allConnections.has(receiver)) {
-      const receiverWs = allConnections.get(receiver);
-      if (receiverWs.readyState === WebSocket.OPEN) {
-        receiverWs.send(JSON.stringify(msg));
+      const fws = allConnections.get(receiver);
+      if (fws.readyState === WebSocket.OPEN) {
+        fws.send(JSON.stringify(msg));
       }
     } else if (allConnections.has(sender)) {
       const fws = allConnections.get(sender);
