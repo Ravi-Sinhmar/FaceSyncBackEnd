@@ -22,9 +22,9 @@ const allConnections = new Map(); //Array to Store Websockets of both the connec
 
 wss.on("connection", async (ws, req) => {
   const url = req.url;
-  let meetingId = url.split("fullMeetId=")[1];
-   meetingId = meetingId.split("__.")[0];
-  const type = meetingId.split("__.")[1];
+  const parts = url.split("fullMeetId=")[1];
+  const meetingId = parts.split("__.")[0];
+  const type = parts.split("__.")[1];
 
   try {
     const meet = await meets.findOne({ meetingId: meetingId });
