@@ -30,22 +30,22 @@ wss.on("connection", async (ws, req) => {
     const meet = await meets.findOne({ meetingId: meetingId });
     if (meet) {
      allConnections.set(type, ws);
-if(allConnections.has("us") && allConnections.has("ad")){
-const adSocket = allConnections.get("ad");
-const usSocket = allConnections.get("us");
+// if(allConnections.has("us") && allConnections.has("ad")){
+// const adSocket = allConnections.get("ad");
+// const usSocket = allConnections.get("us");
 
-if (adSocket.readyState === WebSocket.OPEN) {
-  adSocket.send(JSON.stringify({status:"both"}));
-};
-if (usSocket.readyState === WebSocket.OPEN) {
-  usSocket.send(JSON.stringify({status:"both"}));
-};
+// if (adSocket.readyState === WebSocket.OPEN) {
+//   adSocket.send(JSON.stringify({status:"both"}));
+// };
+// if (usSocket.readyState === WebSocket.OPEN) {
+//   usSocket.send(JSON.stringify({status:"both"}));
+// };
 
-}else {
-  if (ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({status:"you"}));
-  }
-}
+// }else {
+//   if (ws.readyState === WebSocket.OPEN) {
+//     ws.send(JSON.stringify({status:"you"}));
+//   }
+// }
 
 
       console.log("Connected",type);
