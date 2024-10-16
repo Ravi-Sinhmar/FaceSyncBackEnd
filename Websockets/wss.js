@@ -73,7 +73,7 @@ if (usSocket.readyState === WebSocket.OPEN) {
     if (allConnections.has(sender) && allConnections.has(receiver)) {
       const receiverWs = allConnections.get(receiver);
       if (receiverWs.readyState === WebSocket.OPEN) {
-        receiverWs.send(JSON.stringify({msg}));
+        receiverWs.send(JSON.stringify(msg));
       }
     } else if (allConnections.has(sender)) {
       const fws = allConnections.get(sender);
