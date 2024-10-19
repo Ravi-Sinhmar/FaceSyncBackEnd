@@ -17,6 +17,7 @@
     "gitignore": "^0.7.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.2",
+    "socket.io": "^4.8.0",
     "ws": "^8.18.0"
   }
 }
