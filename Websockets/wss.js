@@ -20,41 +20,37 @@ const {formatString,extractMeetingId} = require('./../Controllers/Common/common'
 
 // const cleanName =  userName.toLowerCase().replace(/\s+/g, "");
 
-const allusers = {};
-// handle socket connections
+const emailToSocketIdMap = new Map();
+const socketidToEmailMap = new Map();
+
 io.on("connection", (socket) => {
-  console.log(`Someone connected to socket server and socket id is ${socket.id}`);
-  socket.on("join-user", username => {
-      console.log(`${username} joined socket connection`);
-      allusers[username] = { username, id: socket.id };
-      // inform everyone that someone joined
-      io.emit("joined", allusers);
+  console.log(`Socket Connected`, socket.id);
+  socket.on("room:join", (data) => {
+    const { email, room } = data;
+    emailToSocketIdMap.set(email, socket.id);
+    socketidToEmailMap.set(socket.id, email);
+    io.to(room).emit("user:joined", { email, id: socket.id });
+    socket.join(room);
+    io.to(socket.id).emit("room:join", data);
   });
 
-  socket.on("offer", ({from, to, offer}) => {
-      console.log({from , to, offer });
-      io.to(allusers[to].id).emit("offer", {from, to, offer});
+  socket.on("user:call", ({ to, offer }) => {
+    io.to(to).emit("incomming:call", { from: socket.id, offer });
   });
 
-  socket.on("answer", ({from, to, answer}) => {
-     io.to(allusers[from].id).emit("answer", {from, to, answer});
+  socket.on("call:accepted", ({ to, ans }) => {
+    io.to(to).emit("call:accepted", { from: socket.id, ans });
   });
 
-  socket.on("end-call", ({from, to}) => {
-      io.to(allusers[to].id).emit("end-call", {from, to});
+  socket.on("peer:nego:needed", ({ to, offer }) => {
+    console.log("peer:nego:needed", offer);
+    io.to(to).emit("peer:nego:needed", { from: socket.id, offer });
   });
 
-  socket.on("call-ended", caller => {
-      const [from, to] = caller;
-      io.to(allusers[from].id).emit("call-ended", caller);
-      io.to(allusers[to].id).emit("call-ended", caller);
-  })
-
-  socket.on("icecandidate", candidate => {
-      console.log({ candidate });
-      //broadcast to other peers
-      socket.broadcast.emit("icecandidate", candidate);
-  }); 
-})
+  socket.on("peer:nego:done", ({ to, ans }) => {
+    console.log("peer:nego:done", ans);
+    io.to(to).emit("peer:nego:final", { from: socket.id, ans });
+  });
+});
 
 module.exports = server;
