@@ -16,7 +16,7 @@ const { getCookies } = require("./Controllers/getCookies");
 // Middlewares
 app.use(
   cors({
-    origin: "https://txthbf.awimqwri.com", // Allow requests from this origin
+    origin: "https://live-face.vercel.app/", // Allow requests from this origin
     methods: "GET, POST, PUT, DELETE", // Allowed methods
     credentials: true, // Allow credentials (cookies, authorization headers)
   })
