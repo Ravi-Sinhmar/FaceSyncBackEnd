@@ -66,7 +66,7 @@ app.post("/local",(req,res)=>{
 try {
   console.log("I got the local");
 console.log(req.body);
-  if(req.body){
+  if(req.body){ 
     res.status(200).json({status:'success',message:"req.body is true"})
   }else{res.status(404).json({status:'fail',message:'no req.boyd'})}
 } catch (error) {
