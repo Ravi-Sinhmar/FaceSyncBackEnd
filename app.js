@@ -17,7 +17,7 @@ const { getCookies } = require("./Controllers/getCookies");
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000", // Allow requests from this origin
+    origin: "https://live-face.vercel.app", // Allow requests from this origin
     methods: "GET, POST, PUT, DELETE", // Allowed methods
     credentials: true, // Allow credentials (cookies, authorization headers)
   })
@@ -65,6 +65,28 @@ app.post("/saveMeet", async (req, res) => {
 // http://localhost:3000/meeting/?adminName=ravisinhmar&meetingId=503385
 // http://localhost:3000/meeting/?adminName=chromeboy&meetingId=586379
 // Api 2
+
+
+
+
+
+app.post("/local",(req,res)=>{
+try {
+  console.log("I got the local");
+console.log(req.body);
+  if(req.body){ 
+    res.status(200).json({status:'success',message:"req.body is true"})
+  }else{res.status(404).json({status:'fail',message:'no req.boyd'})}
+} catch (error) {
+  console.log(error);
+  res.status(500).json({status:'fail',message:error});
+}
+
+});
+
+
+
+
 app.post("/seeMeet", checkCookie, async (req, res) => {
   try {
 const meet = await meets.findOne({ meetingId: req.body.meetingId });
