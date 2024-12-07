@@ -13,8 +13,7 @@ const checkCookie = require("./Middleware/checkCookies");
 const { getCookies } = require("./Controllers/getCookies");
 
 
-
-// Middleware
+// Middlewares
 app.use(
   cors({
     origin: "https://live-face.vercel.app", // Allow requests from this origin
@@ -26,13 +25,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-
-// Test API
-
-app.get("/", (req, res) => {
-  console.log("GET Request /");
-  res.status(200).json({status:'success',message:'I am runnning'})
-});
 
 // Api 1
 app.post("/saveMeet", async (req, res) => {

@@ -12,7 +12,7 @@ const server = require("./Websockets/wss");
 
 
 // Server is listening
-server.listen( 5000, () => {
+server.listen(port || 5000, () => {
   console.log(
     `Server is listening at port ${port}`
   );
