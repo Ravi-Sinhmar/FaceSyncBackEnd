@@ -13,10 +13,11 @@ const checkCookie = require("./Middleware/checkCookies");
 const { getCookies } = require("./Controllers/getCookies");
 
 
-// Middlewares
+
+// Middleware
 app.use(
   cors({
-    origin: "https://face-sync.vercel.app", // Allow requests from this origin
+    origin: "http://localhost:3000", // Allow requests from this origin
     methods: "GET, POST, PUT, DELETE", // Allowed methods
     credentials: true, // Allow credentials (cookies, authorization headers)
   })
@@ -25,6 +26,13 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+
+// Test API
+
+app.get("/", (req, res) => {
+  console.log("GET Request /");
+  res.status(200).json({status:'success',message:'I am runnning'})
+});
 
 // Api 1
 app.post("/saveMeet", async (req, res) => {
