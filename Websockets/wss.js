@@ -28,7 +28,7 @@ io.on("connection", (socket) => {
     console.log("Server (room:join):Email , room",email,room);
     emailToSocketIdMap.set(email, socket.id);
     socketidToEmailMap.set(socket.id, email);
-    io.to(room).emit("user:joined", { email, id: socket.id });
+    io.to(room).emit("user:joined", { email:email, id: socket.id });
     socket.join(room);
     io.to(socket.id).emit("room:join", data);
   });
@@ -44,6 +44,16 @@ io.on("connection", (socket) => {
     console.log("Server (call:accepted):to , ans",to,ans);
 
     io.to(to).emit("call:accepted", { from: socket.id, ans });
+  });
+
+  socket.on("setting:update", ({ to }) => {
+    console.log("Updating settings by ",to);
+    io.to(to).emit("setting:update", { from: socket.id});
+  });
+
+  socket.on("cut", ({ to }) => {
+    console.log("Disconnect",to);
+    io.to(to).emit("cut", { from: socket.id});
   });
 
   socket.on("peer:nego:needed", ({ to, offer }) => {
