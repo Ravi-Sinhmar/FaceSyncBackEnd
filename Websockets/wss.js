@@ -34,7 +34,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("user:call", ({ to, offer }) => {
-    console.log("Server (user:call):to , offer",to,offer);
+    console.log("Server (user:call):to , offer",emailToSocketIdMap.get('ad@gmail.com'),offer);
+    console.log("Email is of admin is and socket.id",'ad@gmail.com',emailToSocketIdMap.get('ad@gmail.com'));
     io.to(to).emit("incomming:call", { from: socket.id, offer });
   });
 
